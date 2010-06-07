@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+  <title>BPM</title>
+  <style>
+    body {
+      background: #BBBBFF;
+    }
+    #wrapper {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-top: -6em;
+    }
+    #circle {
+      margin-left: -50%;
+      width: 12em;
+      height: 12em;
+      background-color: #FF9999;
+      border: 3px solid #FF7777;
+      position: relative;
+      -webkit-border-radius: 100px;
+      -moz-border-radius: 100px;
+    }
+    #bpm {
+      position: absolute;
+      top: 50%;
+      text-align: center;
+      width: 100%;
+      font-size: 6em;
+      padding: 0;
+      margin-top: -0.7em;
+      margin-bottom: 0;
+      height: 1em;
+      color: #EEE;
+    }
+    #bpm.settle {
+      margin-top: -1.4em;
+      font-size: 2em;
+      font-style: italic;
+    }
+    #caption {
+      position: absolute;
+      font-style: italic;
+      top: 70%;
+      text-align: center;
+      width: 100%;
+      color: #EEE;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="circle">
+      <div id="bpm"></div>
+      <div id="caption">bpm</div>
+    </div>
+</div>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script>
+    var lastTimes = [];
+
+    $(document).click(press);
+    $(document).keydown(press);
+
+    function press() {
+      var now = new Date();
+
+      lastTimes.push(now);
+
+      var totalDifferences = 0;
+      for (var i=0; i<lastTimes.length - 1; i++) {
+        var a = lastTimes[i];
+        var b = lastTimes[i+1]
+
+        var difference = (b - a) / 1000;
+        totalDifferences += difference;
+      }
+      var average =  totalDifferences / (lastTimes.length - 1);
+
+      if (lastTimes.length >= 2) {
+        var bpm = (60 / average);
+        if (bpm < 1000) {
+          $("#bpm").text(bpm.toPrecision(3)).removeClass("settle");
+        }
+        else {
+          $("#bpm").text("Settle down, motherfucker!").addClass("settle");
+        }
+      }
+      else {
+        $("#bpm").text("");
+      }
+      setTimeout(function (d) {
+        if (d === lastTimes[lastTimes.length-1]) lastTimes = [];
+      }, 1500, now);
+    }
+  </script>
+</body>
+</html>
