@@ -60,51 +60,52 @@
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script>
-    var lastTimes = [];
-    var messages = [
-    "Settle down, ow bay!",
-    "Lay off the caffeine!",
-    "You broke it",
-    "Come on, man",
-    "Just settle down",
-    "I don't like that",
-    "Too fast!"
-    ]
+    $(document).click(press).keydown(press);
 
-    $(document).click(press);
-    $(document).keydown(press);
+    var firstPressTime = null;
+    var lastPressTime = null;
+    var numberOfPresses = 0;
+    var messages = [ "Settle down, ow bay!", "Lay off the caffeine!",
+       "You broke it", "Come on, man", "Just settle down", "I don't like that",
+       "Too fast!" ];
+    function random_message() {
+      return messages[Math.floor(Math.random()*messages.length)];
+    }
 
     function press() {
+      numberOfPresses++;
       var now = new Date();
-
-      lastTimes.push(now);
-
-      var totalDifferences = 0;
-      for (var i=0; i<lastTimes.length - 1; i++) {
-        var a = lastTimes[i];
-        var b = lastTimes[i+1]
-
-        var difference = (b - a) / 1000;
-        totalDifferences += difference;
+      if (firstPressTime) {
+        lastPressTime = now;
       }
-      var average =  totalDifferences / (lastTimes.length - 1);
+      else {
+        firstPressTime = now;
+      }
 
-      if (lastTimes.length >= 2) {
-        var bpm = (60 / average);
+      var totalDifference = (lastPressTime - firstPressTime);
+      var averageDifference = totalDifference / (numberOfPresses - 1);
+
+      if (firstPressTime && lastPressTime) {
+        $("#bpm").fadeIn();
+        var bpm = (60 / averageDifference) * 1000;
         if (bpm <= 999) {
           $("#bpm").text(bpm.toPrecision(3)).removeClass("settle");
         }
         else {
-          // pick a random message
-          var text = messages[Math.floor(Math.random()*messages.length)];
-          $("#bpm").text(text).addClass("settle");
+          $("#bpm").text(random_message()).addClass("settle");
         }
       }
       else {
         $("#bpm").text("");
       }
-      setTimeout(function (d) {
-        if (d === lastTimes[lastTimes.length-1]) lastTimes = [];
+
+      // reset if no input is given for a while
+      setTimeout(function (oldTime) {
+        if (lastPressTime === oldTime) {
+          numberOfPresses = 0;
+          firstPressTime = lastPressTime = null;
+          $("#bpm").fadeOut();
+        }
       }, 1500, now);
     }
   </script>
