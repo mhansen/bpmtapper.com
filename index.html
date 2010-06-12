@@ -52,6 +52,7 @@
 <body>
   <div id="wrapper">
     <div id="circle">
+      <div id="topcaption"></div>
       <div id="bpm"></div>
       <div id="caption">bpm</div>
     </div>
@@ -60,6 +61,15 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script>
     var lastTimes = [];
+    var messages = [
+    "Settle down, ow bay!",
+    "Lay off the caffeine!",
+    "You broke it",
+    "Come on, man",
+    "Just settle down",
+    "I don't like that",
+    "Too fast!"
+    ]
 
     $(document).click(press);
     $(document).keydown(press);
@@ -81,11 +91,13 @@
 
       if (lastTimes.length >= 2) {
         var bpm = (60 / average);
-        if (bpm < 1000) {
+        if (bpm <= 999) {
           $("#bpm").text(bpm.toPrecision(3)).removeClass("settle");
         }
         else {
-          $("#bpm").text("Settle down, motherfucker!").addClass("settle");
+          // pick a random message
+          var text = messages[Math.floor(Math.random()*messages.length)];
+          $("#bpm").text(text).addClass("settle");
         }
       }
       else {
