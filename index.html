@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width,height=device-height" />
   <title>BPM</title>
   <style>
     body {
@@ -19,7 +20,7 @@
       background-color: #FF9999;
       border: 3px solid #FF7777;
       position: relative;
-      -webkit-border-radius: 100px;
+      -webkit-border-radius: 99px;
       -moz-border-radius: 100px;
     }
     #bpm {
@@ -47,6 +48,12 @@
       width: 100%;
       color: #EEE;
     }
+    #help {
+      position:absolute;
+      bottom:1em;
+      right:1em;
+      font-style:italic;
+    }
   </style>
 </head>
 <body>
@@ -56,11 +63,18 @@
       <div id="bpm"></div>
       <div id="caption">bpm</div>
     </div>
-</div>
+  </div>
+  <div id="help">
+    Tap out a song.<br/>Use the spacebar,<br/> or the mouse.
+  </div>
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script>
-    $(document).click(press).keydown(press);
+    $(function () {
+      /* scroll past the address bar on mobile safari */
+      setTimeout(function() { window.scrollTo(0,1); }, 0);
+      $("*").click(press).keydown(press);
+    });
 
     var firstPressTime = null;
     var lastPressTime = null;
@@ -72,7 +86,7 @@
       return messages[Math.floor(Math.random()*messages.length)];
     }
 
-    function press() {
+    function press(e) {
       numberOfPresses++;
       var now = new Date();
       if (firstPressTime) {
@@ -101,12 +115,13 @@
 
       // reset if no input is given for a while
       setTimeout(function (oldTime) {
-        if (lastPressTime === oldTime) {
+        if (lastPressTime === oldTime || lastPressTime === null) {
           numberOfPresses = 0;
           firstPressTime = lastPressTime = null;
           $("#bpm").fadeOut();
         }
       }, 1500, now);
+      e.stopPropagation();
     }
   </script>
 </body>
